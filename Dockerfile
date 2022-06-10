@@ -6,15 +6,11 @@
 FROM theteamultroid/ultroid:main
 
 # set timezone
-ENV TZ=Asia/Kolkata
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
-COPY installer.sh .
-
-RUN bash installer.sh
-
-# changing workdir
-WORKDIR /root/TeamUltroid/
-
-# start the bot.
-CMD ["bash", "startup"]
+RUN apt-get update -y && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends ffmpeg \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+COPY . /app/
+WORKDIR /app/
+RUN pip3 install --no-cache-dir --upgrade --requirement requirements.txt
+CMD bash start
